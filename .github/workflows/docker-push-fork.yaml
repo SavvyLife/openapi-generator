@@ -1,7 +1,7 @@
 # .github/workflows/publish.yml   (in the fork)
 name: Docker publish fork
 on:
-  push: {branches: [main]}        # build when you change the generator
+  push: {branches: [unbound]}        # build when you change the generator
   workflow_dispatch:
 permissions: write-all            # needed for GHCR push
 jobs:
