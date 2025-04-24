@@ -333,6 +333,11 @@ public class DartDioClientCodegen extends AbstractDartCodegen {
                 if (ModelUtils.isMapSchema(schema)) {
                     return "MapBuilder()";
                 }
+
+                if (schema.getDefault() instanceof Map && schema.get$ref() != null) {
+                    String ref = ModelUtils.getSimpleRef(schema.get$ref());
+                    return ref + "Builder()";
+                }
             }
             if (ModelUtils.isDateSchema(schema) || ModelUtils.isDateTimeSchema(schema)) {
                 // this is currently not supported and would create compile errors
