@@ -5464,6 +5464,27 @@ public class DefaultCodegen implements CodegenConfig {
         codegenParameter.defaultValue = toDefaultParameterValue(codegenProperty, parameterSchema);
 
         finishUpdatingParameter(codegenParameter, parameter);
+
+        // --- BEGIN PATCH: Set isEnum and enumName for enum parameters ---
+        Schema<?> referencedSchema = ModelUtils.getReferencedSchema(this.openAPI, parameterSchema);
+        if ((parameterSchema.getEnum() != null && !parameterSchema.getEnum().isEmpty()) ||
+                (referencedSchema != parameterSchema && referencedSchema.getEnum() != null && !referencedSchema.getEnum().isEmpty())) {
+            codegenParameter.isEnum = true;
+            // Set enumName to the model name of the referenced schema, or fallback to dataType
+            String enumName = null;
+            if (referencedSchema != null && referencedSchema.getTitle() != null) {
+                enumName = toModelName(referencedSchema.getTitle());
+            } else if (parameterSchema.getTitle() != null) {
+                enumName = toModelName(parameterSchema.getTitle());
+            } else if (parameterModelName != null) {
+                enumName = parameterModelName;
+            } else {
+                enumName = codegenParameter.dataType;
+            }
+            codegenParameter.enumName = enumName;
+        }
+        // --- END PATCH ---
+
         return codegenParameter;
     }
 
