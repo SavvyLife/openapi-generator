@@ -5482,6 +5482,7 @@ public class DefaultCodegen implements CodegenConfig {
                 enumName = codegenParameter.dataType;
             }
             codegenParameter.enumName = enumName;
+            codegenParameter.datatypeWithEnum = codegenProperty.datatypeWithEnum;
         }
         // --- END PATCH ---
 
