@@ -148,12 +148,12 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
         throw UnsupportedError("Couldn't deserialize oneOf for the discriminator value: ${discValue}");
         {{/vendorExtensions.x-is-parent}}
     }
-    result.oneOf = OneOfDynamic(typeIndex: oneOfTypes.indexOf(oneOfType), types: oneOfTypes, value: oneOfResult);
+    result.oneOf = OneOf{{vendorExtensions.x-one-of-arity}}(typeIndex: oneOfTypes.indexOf(oneOfType), value: oneOfResult);
     {{/discriminator}}
     {{/hasDiscriminatorWithNonEmptyMapping}}
     {{^hasDiscriminatorWithNonEmptyMapping}}
     {{! use the OneOfSerializer when there is no discriminator }}
-    final targetType = const FullType(OneOf, [{{#composedSchemas}}{{#oneOf}}{{>serialization/built_value/variable_serializer_type}}, {{/oneOf}}{{/composedSchemas}}]);
+    final targetType = const FullType(OneOf{{vendorExtensions.x-one-of-arity}}, [{{#composedSchemas}}{{#oneOf}}{{>serialization/built_value/variable_serializer_type}}, {{/oneOf}}{{/composedSchemas}}]);
     {{#vendorExtensions.x-has-self-and-ancestor-only-props}}
     {{! has props, assign them to result, and extract unhandled }}
     final serializedList = (serialized as Iterable<Object?>).toList();
@@ -173,7 +173,7 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
     {{! has no probs at all, pass the serialized as is }}
     oneOfDataSrc = serialized;
     {{/vendorExtensions.x-has-self-and-ancestor-only-props}}
-    result.oneOf = serializers.deserialize(oneOfDataSrc, specifiedType: targetType) as OneOf;
+    result.oneOf = serializers.deserialize(oneOfDataSrc, specifiedType: targetType) as OneOf{{vendorExtensions.x-one-of-arity}}<{{#oneOf}}{{.}}{{^-last}}, {{/-last}}{{/oneOf}}>;
     {{/hasDiscriminatorWithNonEmptyMapping}}
     return result.build();
     {{/-first}}
