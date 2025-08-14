@@ -605,6 +605,7 @@ public class DartDioClientCodegen extends AbstractDartCodegen {
                 cm.imports = rewriteImports(cm.imports, true);
                 cm.vendorExtensions.put("x-has-vars", !cm.vars.isEmpty());
                 cm.vendorExtensions.put("x-one-of-arity", cm.oneOf == null ? 0 : cm.oneOf.size());
+                cm.vendorExtensions.put("x-one-of-arity-gt-1", cm.oneOf != null && cm.oneOf.size() > 1);
             }
         }
 
