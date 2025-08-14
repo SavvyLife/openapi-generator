@@ -174,7 +174,14 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
     oneOfDataSrc = serialized;
     {{/vendorExtensions.x-has-self-and-ancestor-only-props}}
     final oneOf = serializers.deserialize(oneOfDataSrc, specifiedType: targetType) as OneOf;
+    {{#vendorExtensions.x-one-of-arity}}
+    {{#equals}}{{.}}1{{/equals}}
+    result.oneOf = OneOf{{vendorExtensions.x-one-of-arity}}<{{#oneOf}}{{.}}{{^-last}}, {{/-last}}{{/oneOf}}>(value: oneOf.value);
+    {{/equals}}
+    {{^equals}}
     result.oneOf = OneOf{{vendorExtensions.x-one-of-arity}}<{{#oneOf}}{{.}}{{^-last}}, {{/-last}}{{/oneOf}}>(value: oneOf.value, typeIndex: oneOf.typeIndex,);
+    {{/equals}}
+    {{/vendorExtensions.x-one-of-arity}}
     {{/hasDiscriminatorWithNonEmptyMapping}}
     return result.build();
     {{/-first}}
