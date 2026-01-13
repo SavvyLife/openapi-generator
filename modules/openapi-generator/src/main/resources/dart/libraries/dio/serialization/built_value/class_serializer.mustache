@@ -215,7 +215,7 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
     anyOfDataSrc = serialized;
     {{! has no probs at all, pass the serialized as is }}
     {{/vendorExtensions.x-has-self-and-ancestor-only-props}}
-    final anyOfTypes = [{{#mappedModels}}{{modelName}}, {{/mappedModels}}{{#vendorExtensions.x-is-parent}}${{classname}}{{/vendorExtensions.x-is-parent}}];
+    final anyOfTypes = [{{#mappedModels}}{{modelName}}, {{/mappedModels}}{{#vendorExtensions.x-is-parent}}${{classname}}, {{/vendorExtensions.x-is-parent}}UnknownTypeData, ];
     Object anyOfResult;
     Type anyOfType;
     switch (discValue) {
@@ -231,7 +231,14 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
         anyOfType = ${{classname}};
         {{/vendorExtensions.x-is-parent}}
         {{^vendorExtensions.x-is-parent}}
-        throw UnsupportedError("Couldn't deserialize anyOf for the discriminator value: ${discValue}");
+        // Unknown discriminator value - graceful fallback
+        final rawMap = <String, dynamic>{};
+        final srcList = (anyOfDataSrc as Iterable<Object?>).toList();
+        for (var i = 0; i < srcList.length; i += 2) {
+          rawMap[srcList[i] as String] = srcList[i + 1];
+        }
+        anyOfResult = UnknownTypeData((b) => b.rawData = rawMap);
+        anyOfType = UnknownTypeData;
         {{/vendorExtensions.x-is-parent}}
     }
     result.anyOf = AnyOfDynamic(values: {anyOfTypes.indexOf(anyOfType): anyOfResult}, types: anyOfTypes);
