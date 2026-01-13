@@ -148,7 +148,7 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
         throw UnsupportedError("Couldn't deserialize oneOf for the discriminator value: ${discValue}");
         {{/vendorExtensions.x-is-parent}}
     }
-    result.oneOf = OneOfDynamic(typeIndex: oneOfTypes.indexOf(oneOfType), types: oneOfTypes, value: oneOfResult);
+    result.oneOf = OneOf{{vendorExtensions.x-one-of-arity}}<{{#oneOf}}{{.}}{{^-last}}, {{/-last}}{{/oneOf}}>(value: oneOfResult{{^vendorExtensions.x-one-of-arity-gt-1}} as {{#oneOf}}{{#-last}}{{.}}{{/-last}}{{/oneOf}}{{/vendorExtensions.x-one-of-arity-gt-1}}{{#vendorExtensions.x-one-of-arity-gt-1}}, typeIndex: oneOfTypes.indexOf(oneOfType){{/vendorExtensions.x-one-of-arity-gt-1}},);
     {{/discriminator}}
     {{/hasDiscriminatorWithNonEmptyMapping}}
     {{^hasDiscriminatorWithNonEmptyMapping}}
