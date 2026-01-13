@@ -13,12 +13,14 @@ import 'package:{{pubName}}/{{sourceFolder}}/{{modelPackage}}/date.dart';{{/useD
 {{#useDateLibTimeMachine}}import 'package:time_machine/time_machine.dart';
 import 'package:{{pubName}}/{{sourceFolder}}/offset_date_serializer.dart';{{/useDateLibTimeMachine}}
 {{#models}}{{#model}}import 'package:{{pubName}}/{{sourceFolder}}/{{modelPackage}}/{{classFilename}}.dart';
-{{/model}}{{/models}}{{#builtValueSerializerImports}}import '{{{.}}}';
+{{/model}}{{/models}}import 'package:{{pubName}}/{{sourceFolder}}/{{modelPackage}}/unknown_type_data.dart';
+{{#builtValueSerializerImports}}import '{{{.}}}';
 {{/builtValueSerializerImports}}
 
 part 'serializers.g.dart';
 
-@SerializersFor([{{#models}}{{#model}}
+@SerializersFor([
+  UnknownTypeData,{{#models}}{{#model}}
   {{classname}},{{#vendorExtensions.x-is-parent}}${{classname}},{{/vendorExtensions.x-is-parent}}{{/model}}{{/models}}
 ])
 Serializers serializers = (_$serializers.toBuilder(){{#builtValueSerializers}}
