@@ -8,6 +8,7 @@ import 'package:openapi/src/model/foo_ref.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:one_of/one_of.dart';
+import 'package:openapi/src/model/unknown_type_data.dart';
 
 part 'foo_ref_or_value.g.dart';
 
@@ -27,7 +28,7 @@ part 'foo_ref_or_value.g.dart';
 @BuiltValue()
 abstract class FooRefOrValue implements Built<FooRefOrValue, FooRefOrValueBuilder> {
   /// One Of [Foo], [FooRef]
-  OneOf get oneOf;
+  OneOf2<Foo, FooRef> get oneOf;
 
   static const String discriminatorFieldName = r'@type';
 
@@ -106,7 +107,7 @@ class _$FooRefOrValueSerializer implements PrimitiveSerializer<FooRefOrValue> {
     final discIndex = serializedList.indexOf(FooRefOrValue.discriminatorFieldName) + 1;
     final discValue = serializers.deserialize(serializedList[discIndex], specifiedType: FullType(String)) as String;
     oneOfDataSrc = serialized;
-    final oneOfTypes = [Foo, FooRef, ];
+    final oneOfTypes = [Foo, FooRef, UnknownTypeData, ];
     Object oneOfResult;
     Type oneOfType;
     switch (discValue) {
@@ -125,9 +126,16 @@ class _$FooRefOrValueSerializer implements PrimitiveSerializer<FooRefOrValue> {
         oneOfType = FooRef;
         break;
       default:
-        throw UnsupportedError("Couldn't deserialize oneOf for the discriminator value: ${discValue}");
+        // Unknown discriminator value - graceful fallback
+        final rawMap = <String, dynamic>{};
+        final srcList = (oneOfDataSrc as Iterable<Object?>).toList();
+        for (var i = 0; i < srcList.length; i += 2) {
+          rawMap[srcList[i] as String] = srcList[i + 1];
+        }
+        oneOfResult = UnknownTypeData((b) => b.rawData = rawMap);
+        oneOfType = UnknownTypeData;
     }
-    result.oneOf = OneOfDynamic(typeIndex: oneOfTypes.indexOf(oneOfType), types: oneOfTypes, value: oneOfResult);
+    result.oneOf = OneOf<Foo, FooRef>(value: oneOfResult as FooRef,);
     return result.build();
   }
 }

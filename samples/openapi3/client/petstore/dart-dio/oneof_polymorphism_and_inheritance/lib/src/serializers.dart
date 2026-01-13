@@ -32,10 +32,12 @@ import 'package:openapi/src/model/fruit_type.dart';
 import 'package:openapi/src/model/pasta.dart';
 import 'package:openapi/src/model/pizza.dart';
 import 'package:openapi/src/model/pizza_speziale.dart';
+import 'package:openapi/src/model/unknown_type_data.dart';
 
 part 'serializers.g.dart';
 
 @SerializersFor([
+  UnknownTypeData,
   Addressable,$Addressable,
   Apple,
   Banana,

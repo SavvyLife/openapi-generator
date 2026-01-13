@@ -51,5 +51,6 @@ lib/src/model/fruit_type.dart
 lib/src/model/pasta.dart
 lib/src/model/pizza.dart
 lib/src/model/pizza_speziale.dart
+lib/src/model/unknown_type_data.dart
 lib/src/serializers.dart
 pubspec.yaml
