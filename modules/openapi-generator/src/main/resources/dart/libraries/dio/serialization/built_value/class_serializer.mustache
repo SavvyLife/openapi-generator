@@ -148,8 +148,8 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
         throw UnsupportedError("Couldn't deserialize oneOf for the discriminator value: ${discValue}");
         {{/vendorExtensions.x-is-parent}}
     }
-    result.oneOf = OneOf{{vendorExtensions.x-one-of-arity}}<{{#oneOf}}{{.}}{{^-last}}, {{/-last}}{{/oneOf}}>(value: oneOf.value{{^vendorExtensions.x-one-of-arity-gt-1}} as {{#oneOf}}{{#-last}}{{.}}{{/-last}}{{/oneOf}}{{/vendorExtensions.x-one-of-arity-gt-1}}{{#vendorExtensions.x-one-of-arity-gt-1}}, typeIndex: oneOf.typeIndex{{/vendorExtensions.x-one-of-arity-gt-1}},);
     {{/discriminator}}
+    result.oneOf = OneOf{{vendorExtensions.x-one-of-arity}}<{{#oneOf}}{{.}}{{^-last}}, {{/-last}}{{/oneOf}}>(value: oneOf.value{{^vendorExtensions.x-one-of-arity-gt-1}} as {{#oneOf}}{{#-last}}{{.}}{{/-last}}{{/oneOf}}{{/vendorExtensions.x-one-of-arity-gt-1}}{{#vendorExtensions.x-one-of-arity-gt-1}}, typeIndex: oneOf.typeIndex{{/vendorExtensions.x-one-of-arity-gt-1}},);
     {{/hasDiscriminatorWithNonEmptyMapping}}
     {{^hasDiscriminatorWithNonEmptyMapping}}
     {{! use the OneOfSerializer when there is no discriminator }}
