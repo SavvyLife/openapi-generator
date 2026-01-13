@@ -9,6 +9,7 @@ import 'package:openapi/src/model/bar.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:one_of/one_of.dart';
+import 'package:openapi/src/model/unknown_type_data.dart';
 
 part 'bar_ref_or_value.g.dart';
 
@@ -28,7 +29,7 @@ part 'bar_ref_or_value.g.dart';
 @BuiltValue()
 abstract class BarRefOrValue implements Built<BarRefOrValue, BarRefOrValueBuilder> {
   /// One Of [Bar], [BarRef]
-  OneOf get oneOf;
+  OneOf2<Bar, BarRef> get oneOf;
 
   static const String discriminatorFieldName = r'@type';
 
@@ -107,7 +108,7 @@ class _$BarRefOrValueSerializer implements PrimitiveSerializer<BarRefOrValue> {
     final discIndex = serializedList.indexOf(BarRefOrValue.discriminatorFieldName) + 1;
     final discValue = serializers.deserialize(serializedList[discIndex], specifiedType: FullType(String)) as String;
     oneOfDataSrc = serialized;
-    final oneOfTypes = [Bar, BarRef, ];
+    final oneOfTypes = [Bar, BarRef, UnknownTypeData, ];
     Object oneOfResult;
     Type oneOfType;
     switch (discValue) {
@@ -126,9 +127,16 @@ class _$BarRefOrValueSerializer implements PrimitiveSerializer<BarRefOrValue> {
         oneOfType = BarRef;
         break;
       default:
-        throw UnsupportedError("Couldn't deserialize oneOf for the discriminator value: ${discValue}");
+        // Unknown discriminator value - graceful fallback
+        final rawMap = <String, dynamic>{};
+        final srcList = (oneOfDataSrc as Iterable<Object?>).toList();
+        for (var i = 0; i < srcList.length; i += 2) {
+          rawMap[srcList[i] as String] = srcList[i + 1];
+        }
+        oneOfResult = UnknownTypeData((b) => b.rawData = rawMap);
+        oneOfType = UnknownTypeData;
     }
-    result.oneOf = OneOfDynamic(typeIndex: oneOfTypes.indexOf(oneOfType), types: oneOfTypes, value: oneOfResult);
+    result.oneOf = OneOf<Bar, BarRef>(value: oneOfResult as BarRef,);
     return result.build();
   }
 }

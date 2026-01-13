@@ -7,6 +7,7 @@ import 'package:openapi/src/model/pizza_speziale.dart';
 import 'package:openapi/src/model/entity.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:openapi/src/model/unknown_type_data.dart';
 
 part 'pizza.g.dart';
 

@@ -13,6 +13,7 @@ import 'package:openapi/src/model/bar_create.dart';
 import 'package:openapi/src/model/bar.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:openapi/src/model/unknown_type_data.dart';
 
 part 'entity.g.dart';
 

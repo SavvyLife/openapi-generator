@@ -123,37 +123,35 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
     oneOfDataSrc = serialized;
     {{! has no probs at all, pass the serialized as is }}
     {{/vendorExtensions.x-has-self-and-ancestor-only-props}}
-    final targetType = const FullType(OneOf, [{{#oneOf}}FullType({{.}}){{^-last}}, {{/-last}}{{/oneOf}}]);
-    OneOf oneOf;
+    final oneOfTypes = [{{#oneOf}}{{.}}{{^-last}}, {{/-last}}{{/oneOf}}UnknownTypeData, ];
+    Object oneOfResult;
     Type oneOfType;
     switch (discValue) {
       {{#mappedModels}}
       case r'{{mappingName}}':
-        oneOf = serializers.deserialize(
+        oneOfResult = serializers.deserialize(
           oneOfDataSrc,
-          specifiedType: targetType,
-        ) as OneOf;
+          specifiedType: FullType({{modelName}}),
+        ) as {{modelName}};
         oneOfType = {{modelName}};
         break;
       {{/mappedModels}}
       default:
-        {{#vendorExtensions.x-is-parent}}
-        oneOf = serializers.deserialize(
-          oneOfDataSrc,
-          specifiedType: targetType,
-        ) as OneOf;
-        oneOfType = ${{classname}};
-        {{/vendorExtensions.x-is-parent}}
-        {{^vendorExtensions.x-is-parent}}
-        throw UnsupportedError("Couldn't deserialize oneOf for the discriminator value: ${discValue}");
-        {{/vendorExtensions.x-is-parent}}
+        // Unknown discriminator value - graceful fallback
+        final rawMap = <String, dynamic>{};
+        final srcList = (oneOfDataSrc as Iterable<Object?>).toList();
+        for (var i = 0; i < srcList.length; i += 2) {
+          rawMap[srcList[i] as String] = srcList[i + 1];
+        }
+        oneOfResult = UnknownTypeData((b) => b.rawData = rawMap);
+        oneOfType = UnknownTypeData;
     }
     {{/discriminator}}
-    result.oneOf = OneOf{{vendorExtensions.x-one-of-arity}}<{{#oneOf}}{{.}}{{^-last}}, {{/-last}}{{/oneOf}}>(value: oneOf.value{{^vendorExtensions.x-one-of-arity-gt-1}} as {{#oneOf}}{{#-last}}{{.}}{{/-last}}{{/oneOf}}{{/vendorExtensions.x-one-of-arity-gt-1}}{{#vendorExtensions.x-one-of-arity-gt-1}}, typeIndex: oneOf.typeIndex{{/vendorExtensions.x-one-of-arity-gt-1}},);
+    result.oneOf = OneOf{{vendorExtensions.x-one-of-arity}}<{{#oneOf}}{{.}}{{^-last}}, {{/-last}}{{/oneOf}}>(value: oneOfResult{{^vendorExtensions.x-one-of-arity-gt-1}} as {{#oneOf}}{{#-last}}{{.}}{{/-last}}{{/oneOf}}{{/vendorExtensions.x-one-of-arity-gt-1}}{{#vendorExtensions.x-one-of-arity-gt-1}}, typeIndex: oneOfTypes.indexOf(oneOfType){{/vendorExtensions.x-one-of-arity-gt-1}},);
     {{/hasDiscriminatorWithNonEmptyMapping}}
     {{^hasDiscriminatorWithNonEmptyMapping}}
     {{! use the OneOfSerializer when there is no discriminator }}
-    final targetType = const FullType(OneOf, [{{#oneOf}}FullType({{.}}){{^-last}}, {{/-last}}{{/oneOf}}]);
+    final targetType = const FullType(OneOf, [{{#oneOf}}FullType({{.}}){{^-last}}, {{/-last}}{{/oneOf}}UnknownTypeData, ]);
     {{#vendorExtensions.x-has-self-and-ancestor-only-props}}
     {{! has props, assign them to result, and extract unhandled }}
     final serializedList = (serialized as Iterable<Object?>).toList();
@@ -207,7 +205,7 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
     anyOfDataSrc = serialized;
     {{! has no probs at all, pass the serialized as is }}
     {{/vendorExtensions.x-has-self-and-ancestor-only-props}}
-    final anyOfTypes = [{{#mappedModels}}{{modelName}}, {{/mappedModels}}{{#vendorExtensions.x-is-parent}}${{classname}}{{/vendorExtensions.x-is-parent}}];
+    final anyOfTypes = [{{#mappedModels}}{{modelName}}, {{/mappedModels}}{{#vendorExtensions.x-is-parent}}${{classname}}, {{/vendorExtensions.x-is-parent}}UnknownTypeData, ];
     Object anyOfResult;
     Type anyOfType;
     switch (discValue) {
@@ -223,7 +221,14 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
         anyOfType = ${{classname}};
         {{/vendorExtensions.x-is-parent}}
         {{^vendorExtensions.x-is-parent}}
-        throw UnsupportedError("Couldn't deserialize anyOf for the discriminator value: ${discValue}");
+        // Unknown discriminator value - graceful fallback
+        final rawMap = <String, dynamic>{};
+        final srcList = (anyOfDataSrc as Iterable<Object?>).toList();
+        for (var i = 0; i < srcList.length; i += 2) {
+          rawMap[srcList[i] as String] = srcList[i + 1];
+        }
+        anyOfResult = UnknownTypeData((b) => b.rawData = rawMap);
+        anyOfType = UnknownTypeData;
         {{/vendorExtensions.x-is-parent}}
     }
     result.anyOf = AnyOfDynamic(values: {anyOfTypes.indexOf(anyOfType): anyOfResult}, types: anyOfTypes);
