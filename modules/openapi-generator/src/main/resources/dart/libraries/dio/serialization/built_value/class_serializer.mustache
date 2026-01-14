@@ -151,7 +151,7 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
     {{/hasDiscriminatorWithNonEmptyMapping}}
     {{^hasDiscriminatorWithNonEmptyMapping}}
     {{! use the OneOfSerializer when there is no discriminator }}
-    final targetType = const FullType(OneOf, [{{#oneOf}}FullType({{.}}), {{/oneOf}}UnknownTypeData, ]);
+    final targetType = const FullType(OneOf, [{{#oneOf}}FullType({{.}}), {{/oneOf}}FullType(UnknownTypeData), ]);
     {{#vendorExtensions.x-has-self-and-ancestor-only-props}}
     {{! has props, assign them to result, and extract unhandled }}
     final serializedList = (serialized as Iterable<Object?>).toList();
