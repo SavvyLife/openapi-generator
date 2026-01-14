@@ -123,7 +123,7 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
     oneOfDataSrc = serialized;
     {{! has no probs at all, pass the serialized as is }}
     {{/vendorExtensions.x-has-self-and-ancestor-only-props}}
-    final oneOfTypes = [{{#oneOf}}{{.}}{{^-last}}, {{/-last}}{{/oneOf}}UnknownTypeData, ];
+    final oneOfTypes = [{{#oneOf}}{{.}}, {{/oneOf}}UnknownTypeData, ];
     Object oneOfResult;
     Type oneOfType;
     switch (discValue) {
@@ -151,7 +151,7 @@ class _${{classname}}Serializer implements PrimitiveSerializer<{{classname}}> {
     {{/hasDiscriminatorWithNonEmptyMapping}}
     {{^hasDiscriminatorWithNonEmptyMapping}}
     {{! use the OneOfSerializer when there is no discriminator }}
-    final targetType = const FullType(OneOf, [{{#oneOf}}FullType({{.}}){{^-last}}, {{/-last}}{{/oneOf}}UnknownTypeData, ]);
+    final targetType = const FullType(OneOf, [{{#oneOf}}FullType({{.}}), {{/oneOf}}UnknownTypeData, ]);
     {{#vendorExtensions.x-has-self-and-ancestor-only-props}}
     {{! has props, assign them to result, and extract unhandled }}
     final serializedList = (serialized as Iterable<Object?>).toList();
