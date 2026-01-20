@@ -1,0 +1,37 @@
+[project]
+name = "{{{projectName}}}"
+version = "{{{packageVersion}}}"
+description = "{{{appName}}}"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "{{{licenseInfo}}}{{^licenseInfo}}MIT{{/licenseInfo}}"
+keywords = ["OpenAPI", "OpenAPI-Generator", "{{{appName}}}", "NATS"]
+authors = [
+    { name = "{{infoName}}{{^infoName}}OpenAPI Generator Community{{/infoName}}", email = "{{infoEmail}}{{^infoEmail}}team@openapitools.org{{/infoEmail}}" }
+]
+dependencies = [
+    "pydantic>=2",
+    "orjson>=3.9.0",
+    "httpx>=0.25.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.2.1",
+    "pytest-asyncio>=0.21.0",
+    "mypy>=1.5",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["{{{packageName}}}*"]
+
+[tool.mypy]
+files = ["{{{packageName}}}"]
+strict = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
