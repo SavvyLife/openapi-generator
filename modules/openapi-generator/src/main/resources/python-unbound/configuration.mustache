@@ -1,0 +1,64 @@
+# coding: utf-8
+
+{{>partial_header}}
+
+from typing import Dict, Optional
+from typing_extensions import Self
+
+
+class Configuration:
+    """Configuration for the API client.
+
+    :param headers: Default headers to include in all requests.
+        Use this for authentication (Authorization, accountId, etc.)
+    :param timeout: Default timeout for requests in seconds.
+
+    Example:
+
+    config = Configuration(
+        headers={
+            "Authorization": "Bearer your-token",
+            "accountId": "your-account-id",
+        },
+        timeout=10.0,
+    )
+    """
+
+    _default: Optional[Self] = None
+
+    def __init__(
+        self,
+        headers: Optional[Dict[str, str]] = None,
+        timeout: float = 5.0,
+    ) -> None:
+        self.headers = headers or {}
+        self.timeout = timeout
+
+    def with_headers(self, headers: Dict[str, str]) -> Self:
+        """Return new config with additional headers merged in."""
+        new_headers = {**self.headers, **headers}
+        return self.__class__(headers=new_headers, timeout=self.timeout)
+
+    def with_auth(self, token: str) -> Self:
+        """Return new config with Authorization header set."""
+        return self.with_headers({"Authorization": f"Bearer {token}"})
+
+    def with_account(self, account_id: str) -> Self:
+        """Return new config with accountId header set."""
+        return self.with_headers({"accountId": account_id})
+
+    def with_timeout(self, timeout: float) -> Self:
+        """Return new config with different timeout."""
+        return self.__class__(headers=self.headers.copy(), timeout=timeout)
+
+    @classmethod
+    def set_default(cls, default: Optional[Self]) -> None:
+        """Set the default configuration instance."""
+        cls._default = default
+
+    @classmethod
+    def get_default(cls) -> Self:
+        """Get the default configuration instance."""
+        if cls._default is None:
+            cls._default = cls()
+        return cls._default
