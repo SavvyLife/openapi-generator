@@ -1,0 +1,81 @@
+# {{{projectName}}}
+
+{{{appDescription}}}
+
+This client uses `RequestClient` for NATS-based communication instead of HTTP.
+
+## Requirements
+
+- Python 3.9+
+- `unbound_core` package (provides `RequestClient`)
+
+## Installation
+
+```bash
+pip install {{{projectName}}}
+```
+
+## Usage
+
+```python
+from {{{packageName}}}.configuration import Configuration
+{{#apiInfo}}
+{{#apis}}
+{{#-first}}
+from {{{packageName}}}.api.{{classFilename}} import {{classname}}
+{{/-first}}
+{{/apis}}
+{{/apiInfo}}
+
+# Configure the client with authentication
+config = Configuration(
+    headers={
+        "Authorization": "Bearer YOUR_TOKEN",
+        "accountId": "YOUR_ACCOUNT_ID",
+    },
+    timeout=10.0,
+)
+
+# Or use builder methods
+config = Configuration().with_auth("YOUR_TOKEN").with_account("YOUR_ACCOUNT_ID")
+
+{{#apiInfo}}
+{{#apis}}
+{{#-first}}
+# Create API instance
+api = {{classname}}(configuration=config)
+
+# Make requests (all methods are async)
+result = await api.some_method()
+{{/-first}}
+{{/apis}}
+{{/apiInfo}}
+```
+
+## Configuration
+
+The `Configuration` class accepts:
+- `headers`: Dict of headers to include in all requests (use for auth)
+- `timeout`: Request timeout in seconds (default: 5.0)
+
+Helper methods:
+- `with_auth(token)`: Add Bearer token
+- `with_account(account_id)`: Add accountId header
+- `with_headers(headers)`: Merge additional headers
+- `with_timeout(timeout)`: Set different timeout
+
+## API Documentation
+
+{{#apiInfo}}
+{{#apis}}
+- [{{{classname}}}](docs/{{{classname}}}.md)
+{{/apis}}
+{{/apiInfo}}
+
+## Models
+
+{{#models}}
+{{#model}}
+- [{{{classname}}}](docs/{{{classname}}}.md)
+{{/model}}
+{{/models}}
