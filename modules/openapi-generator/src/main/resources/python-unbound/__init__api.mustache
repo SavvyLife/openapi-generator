@@ -1,0 +1,11 @@
+# coding: utf-8
+
+# flake8: noqa
+
+{{>partial_header}}
+
+{{#apiInfo}}
+{{#apis}}
+from {{packageName}}.api.{{classFilename}} import {{classname}}
+{{/apis}}
+{{/apiInfo}}

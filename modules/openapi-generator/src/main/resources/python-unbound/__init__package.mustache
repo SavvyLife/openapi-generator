@@ -1,0 +1,38 @@
+# coding: utf-8
+
+# flake8: noqa
+
+{{>partial_header}}
+
+__version__ = "{{{packageVersion}}}"
+
+# Import Configuration
+from {{packageName}}.configuration import Configuration
+
+# Import exceptions
+from {{packageName}}.exceptions import (
+    ApiException,
+    NoRespondersException,
+    TimeoutException,
+    BadRequestException,
+    UnauthorizedException,
+    ForbiddenException,
+    NotFoundException,
+    ConflictException,
+    UnprocessableEntityException,
+    ServiceException,
+)
+
+# Import APIs
+{{#apiInfo}}
+{{#apis}}
+from {{packageName}}.api.{{classFilename}} import {{classname}}
+{{/apis}}
+{{/apiInfo}}
+
+# Import models
+{{#models}}
+{{#model}}
+from {{packageName}}.models.{{classFilename}} import {{classname}}
+{{/model}}
+{{/models}}
