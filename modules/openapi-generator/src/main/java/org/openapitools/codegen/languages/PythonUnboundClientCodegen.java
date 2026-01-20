@@ -27,6 +27,8 @@ import java.util.EnumSet;
 public class PythonUnboundClientCodegen extends AbstractPythonCodegen implements CodegenConfig {
 
     public static final String GENERATOR_NAME = "python-unbound";
+    protected String apiDocPath = "docs/";
+    protected String modelDocPath = "docs/";
 
     public PythonUnboundClientCodegen() {
         super();
@@ -136,6 +138,14 @@ public class PythonUnboundClientCodegen extends AbstractPythonCodegen implements
             generateSourceCodeOnly = Boolean.valueOf(additionalProperties.get(CodegenConstants.SOURCECODEONLY_GENERATION).toString());
         }
 
+        // Set doc paths - only nest in package when generating source code only
+        if (generateSourceCodeOnly) {
+            apiDocPath = packagePath() + "/" + apiDocPath;
+            modelDocPath = packagePath() + "/" + modelDocPath;
+        }
+        additionalProperties.put("apiDocPath", apiDocPath);
+        additionalProperties.put("modelDocPath", modelDocPath);
+
         String modelPath = packagePath() + File.separatorChar + modelPackage.replace('.', File.separatorChar);
         String apiPath = packagePath() + File.separatorChar + apiPackage.replace('.', File.separatorChar);
 
@@ -215,5 +225,15 @@ public class PythonUnboundClientCodegen extends AbstractPythonCodegen implements
     @Override
     public String generatorLanguageVersion() {
         return "3.9+";
+    }
+
+    @Override
+    public String apiDocFileFolder() {
+        return outputFolder + File.separator + apiDocPath;
+    }
+
+    @Override
+    public String modelDocFileFolder() {
+        return outputFolder + File.separator + modelDocPath;
     }
 }
