@@ -1,0 +1,97 @@
+# coding: utf-8
+
+{{>partial_header}}
+
+from typing import Any, Optional
+
+
+class ApiException(Exception):
+    """Base exception for API errors."""
+
+    def __init__(
+        self,
+        status_code: Optional[int] = None,
+        message: str = "",
+        body: Optional[Any] = None,
+    ) -> None:
+        self.status_code = status_code
+        self.message = message
+        self.body = body
+        super().__init__(message)
+
+    def __str__(self) -> str:
+        error_message = f"({self.status_code}) {self.message}"
+        if self.body:
+            error_message += f"\nBody: {self.body}"
+        return error_message
+
+
+class NoRespondersException(ApiException):
+    """No service is handling this endpoint."""
+
+    def __init__(self, message: str = "No responders available") -> None:
+        super().__init__(status_code=503, message=message)
+
+
+class TimeoutException(ApiException):
+    """Request timed out."""
+
+    def __init__(self, message: str = "Request timed out") -> None:
+        super().__init__(status_code=504, message=message)
+
+
+class BadRequestException(ApiException):
+    """HTTP 400 Bad Request."""
+    pass
+
+
+class UnauthorizedException(ApiException):
+    """HTTP 401 Unauthorized."""
+    pass
+
+
+class ForbiddenException(ApiException):
+    """HTTP 403 Forbidden."""
+    pass
+
+
+class NotFoundException(ApiException):
+    """HTTP 404 Not Found."""
+    pass
+
+
+class ConflictException(ApiException):
+    """HTTP 409 Conflict."""
+    pass
+
+
+class UnprocessableEntityException(ApiException):
+    """HTTP 422 Unprocessable Entity."""
+    pass
+
+
+class ServiceException(ApiException):
+    """HTTP 5xx Server Error."""
+    pass
+
+
+def raise_for_status(status_code: int, message: str = "", body: Any = None) -> None:
+    """Raise appropriate exception based on status code."""
+    if status_code < 400:
+        return
+
+    exception_map = {
+        400: BadRequestException,
+        401: UnauthorizedException,
+        403: ForbiddenException,
+        404: NotFoundException,
+        409: ConflictException,
+        422: UnprocessableEntityException,
+    }
+
+    if status_code in exception_map:
+        raise exception_map[status_code](status_code=status_code, message=message, body=body)
+    elif 500 <= status_code < 600:
+        raise ServiceException(status_code=status_code, message=message, body=body)
+    else:
+        raise ApiException(status_code=status_code, message=message, body=body)
