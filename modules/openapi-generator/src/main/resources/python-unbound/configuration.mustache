@@ -4,6 +4,7 @@
 
 from typing import Dict, Optional
 from typing_extensions import Self
+from api_framework.thread_context import ThreadContext
 
 
 class Configuration:
@@ -52,13 +53,8 @@ class Configuration:
         return self.__class__(headers=self.headers.copy(), timeout=timeout)
 
     @classmethod
-    def set_default(cls, default: Optional[Self]) -> None:
-        """Set the default configuration instance."""
-        cls._default = default
-
-    @classmethod
-    def get_default(cls) -> Self:
-        """Get the default configuration instance."""
-        if cls._default is None:
-            cls._default = cls()
-        return cls._default
+    def authed(cls) -> Self:
+        """Create a config with the context JWTToken
+        jwt_token = ThreadContext.get()
+        headers = {"Authorization": f"Bearer {jwt_token.access_token}"}
+        return cls(headers=headers)

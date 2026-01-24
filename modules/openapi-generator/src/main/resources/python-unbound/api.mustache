@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Union
 {{import}}
 {{/imports}}
 
-from unbound_core.request_client import RequestClient
+from api_framework.data_access.message_broker.mb_request_client import MbAsyncRpcClient
 from nats.errors import TimeoutError, NoRespondersError
 
 from {{packageName}}.configuration import Configuration
@@ -28,7 +28,11 @@ class {{classname}}:
     """
 
     def __init__(self, configuration: Optional[Configuration] = None) -> None:
-        self.configuration = configuration or Configuration.get_default()
+        self.configuration = configuration or Configuration.authed()
+        self._client = MbAsyncRpcClient(
+            headers=self.configuration.headers,
+            timeout=self.configuration.timeout,
+        )
 {{#operation}}
 
     async def {{operationId}}(
@@ -57,41 +61,38 @@ class {{classname}}:
         :return: {{{.}}}
 {{/returnType}}
         """
-        # Build path parameters
-        _path_params: Dict[str, str] = {}
+        # Build path with path parameters
+        _path = "{{{path}}}"
 {{#pathParams}}
         if {{paramName}} is not None:
-            _path_params["{{baseName}}"] = {{#isEnumRef}}{{paramName}}.value{{/isEnumRef}}{{^isEnumRef}}str({{paramName}}){{/isEnumRef}}
+            _path = _path.replace("{ {{~baseName~}} }", {{#isEnumRef}}{{paramName}}.value{{/isEnumRef}}{{^isEnumRef}}str({{paramName}}){{/isEnumRef}})
 {{/pathParams}}
 
         # Build query parameters
-        _query_params: Dict[str, Any] = {}
+        _params: Dict[str, Any] = {}
 {{#queryParams}}
         if {{paramName}} is not None:
-            _query_params["{{baseName}}"] = {{#isEnumRef}}{{paramName}}.value{{/isEnumRef}}{{^isEnumRef}}{{paramName}}{{/isEnumRef}}
+            _params["{{baseName}}"] = {{#isEnumRef}}{{paramName}}.value{{/isEnumRef}}{{^isEnumRef}}{{paramName}}{{/isEnumRef}}
 {{/queryParams}}
 
         # Build request body
-        _body: Optional[Any] = None
+        _json: Optional[Any] = None
 {{#bodyParam}}
         if {{paramName}} is not None:
             {{#isArray}}
-            _body = [item.model_dump(by_alias=True, exclude_none=True) if hasattr(item, "model_dump") else item for item in {{paramName}}]
+            _json = [item.model_dump(by_alias=True, exclude_none=True) if hasattr(item, "model_dump") else item for item in {{paramName}}]
             {{/isArray}}
             {{^isArray}}
-            _body = {{paramName}}.model_dump(by_alias=True, exclude_none=True) if hasattr({{paramName}}, "model_dump") else {{paramName}}
+            _json = {{paramName}}.model_dump(by_alias=True, exclude_none=True) if hasattr({{paramName}}, "model_dump") else {{paramName}}
             {{/isArray}}
 {{/bodyParam}}
 
         try:
-            response = await RequestClient.request(
-                "{{{path}}}",
-                method="{{#lambda.lowercase}}{{httpMethod}}{{/lambda.lowercase}}",
-                path_params=_path_params if _path_params else None,
-                query_params=_query_params if _query_params else None,
-                headers=self.configuration.headers,
-                body=_body,
-                timeout=self.configuration.timeout,
+            response = await self._client.request(
+                "{{httpMethod}}",
+                _path,
+                params=_params if _params else None,
+                json=_json,
             )
         except NoRespondersError:
             raise NoRespondersException(message=f"No handler for {{httpMethod}} {{{path}}}")
