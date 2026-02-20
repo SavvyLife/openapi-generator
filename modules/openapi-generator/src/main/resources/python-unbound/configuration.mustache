@@ -54,7 +54,7 @@ class Configuration:
 
     @classmethod
     def authed(cls) -> Self:
-        """Create a config with the context JWTToken
+        """Create a config with the context JWTToken."""
         jwt_token = ThreadContext.get()
         headers = {"Authorization": f"Bearer {jwt_token.access_token}"}
         return cls(headers=headers)

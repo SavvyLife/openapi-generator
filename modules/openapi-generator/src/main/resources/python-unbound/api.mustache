@@ -8,13 +8,9 @@ from typing import Any, Dict, List, Optional, Union
 {{/imports}}
 
 from api_framework.data_access.message_broker.mb_request_client import MbAsyncRpcClient
-from nats.errors import TimeoutError, NoRespondersError
-
 from {{packageName}}.configuration import Configuration
 from {{packageName}}.exceptions import (
     ApiException,
-    NoRespondersException,
-    TimeoutException,
     raise_for_status,
 )
 
@@ -65,7 +61,7 @@ class {{classname}}:
         _path = "{{{path}}}"
 {{#pathParams}}
         if {{paramName}} is not None:
-            _path = _path.replace("{ {{~baseName~}} }", {{#isEnumRef}}{{paramName}}.value{{/isEnumRef}}{{^isEnumRef}}str({{paramName}}){{/isEnumRef}})
+            _path = _path.replace("{" + "{{baseName}}" + "}", {{#isEnumRef}}{{paramName}}.value{{/isEnumRef}}{{^isEnumRef}}str({{paramName}}){{/isEnumRef}})
 {{/pathParams}}
 
         # Build query parameters
@@ -87,17 +83,12 @@ class {{classname}}:
             {{/isArray}}
 {{/bodyParam}}
 
-        try:
-            response = await self._client.request(
-                "{{httpMethod}}",
-                _path,
-                params=_params if _params else None,
-                json=_json,
-            )
-        except NoRespondersError:
-            raise NoRespondersException(message=f"No handler for {{httpMethod}} {{{path}}}")
-        except TimeoutError:
-            raise TimeoutException(message=f"Request timed out: {{httpMethod}} {{{path}}}")
+        response = await self._client.request(
+            "{{httpMethod}}",
+            _path,
+            params=_params if _params else None,
+            json=_json,
+        )
 
         raise_for_status(response.status_code, body=response.text if response.content else None)
 

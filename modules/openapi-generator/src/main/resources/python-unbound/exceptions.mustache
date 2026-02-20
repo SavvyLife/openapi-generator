@@ -26,20 +26,6 @@ class ApiException(Exception):
         return error_message
 
 
-class NoRespondersException(ApiException):
-    """No service is handling this endpoint."""
-
-    def __init__(self, message: str = "No responders available") -> None:
-        super().__init__(status_code=503, message=message)
-
-
-class TimeoutException(ApiException):
-    """Request timed out."""
-
-    def __init__(self, message: str = "Request timed out") -> None:
-        super().__init__(status_code=504, message=message)
-
-
 class BadRequestException(ApiException):
     """HTTP 400 Bad Request."""
     pass
