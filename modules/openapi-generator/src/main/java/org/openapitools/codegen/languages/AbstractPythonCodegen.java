@@ -988,6 +988,10 @@ public abstract class AbstractPythonCodegen extends DefaultCodegen implements Co
                         // skip self import
                         continue;
                     }
+                    if (languageSpecificPrimitives.contains(modelImport)) {
+                        // skip primitive types (e.g. "object") that don't need model imports
+                        continue;
+                    }
                     modelsToImport.add("from " + packageName + ".models." + underscore(modelImport) + " import " + modelImport);
                 }
 
