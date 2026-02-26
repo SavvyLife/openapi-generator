@@ -947,9 +947,13 @@ public abstract class AbstractPythonCodegen extends DefaultCodegen implements Co
             }
 
             // add parent model to import
-            if (!StringUtils.isEmpty(model.parent)) {
+            // skip "object" as parent since it's a Python builtin, not a model class
+            if (!StringUtils.isEmpty(model.parent) && !languageSpecificPrimitives.contains(model.parent)) {
                 modelImports.add(model.parent);
             } else if (!model.isEnum) {
+                if (languageSpecificPrimitives.contains(model.parent)) {
+                    model.parent = null;
+                }
                 moduleImports.add("pydantic", "BaseModel");
             }
 
