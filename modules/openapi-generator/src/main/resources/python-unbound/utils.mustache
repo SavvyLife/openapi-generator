@@ -1,0 +1,9 @@
+# coding: utf-8
+
+{{>partial_header}}
+
+
+def to_camel_case(snake_str: str) -> str:
+    """Convert snake_case string to camelCase."""
+    components = snake_str.split("_")
+    return components[0] + "".join(x.capitalize() for x in components[1:])

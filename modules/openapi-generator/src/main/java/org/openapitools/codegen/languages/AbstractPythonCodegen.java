@@ -52,6 +52,7 @@ public abstract class AbstractPythonCodegen extends DefaultCodegen implements Co
     @Setter protected String packageVersion = "1.0.0";
     @Setter protected String projectName; // for setup.py, e.g. petstore-api
     protected boolean hasModelsToImport = Boolean.FALSE;
+    protected boolean useAliasGenerator = false;
     protected String mapNumberTo = "Union[StrictFloat, StrictInt]";
     protected Map<Character, String> regexModifiers;
 
@@ -2152,7 +2153,7 @@ public abstract class AbstractPythonCodegen extends DefaultCodegen implements Co
             }
 
             // field
-            if (cp.baseName != null && !cp.baseName.equals(cp.name)) { // base name not the same as name
+            if (!useAliasGenerator && cp.baseName != null && !cp.baseName.equals(cp.name)) { // base name not the same as name
                 pt.annotate("alias", cp.baseName);
             }
 

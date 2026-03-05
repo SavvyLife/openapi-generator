@@ -77,6 +77,8 @@ public class PythonUnboundClientCodegen extends AbstractPythonCodegen implements
         languageSpecificPrimitives.add("bytearray");
         languageSpecificPrimitives.add("none_type");
 
+        useAliasGenerator = true;
+
         supportsInheritance = true;
         modelPackage = "models";
         apiPackage = "api";
@@ -159,6 +161,7 @@ public class PythonUnboundClientCodegen extends AbstractPythonCodegen implements
 
         supportingFiles.add(new SupportingFile("configuration.mustache", packagePath(), "configuration.py"));
         supportingFiles.add(new SupportingFile("exceptions.mustache", packagePath(), "exceptions.py"));
+        supportingFiles.add(new SupportingFile("utils.mustache", packagePath(), "utils.py"));
         supportingFiles.add(new SupportingFile("__init__package.mustache", packagePath(), "__init__.py"));
         supportingFiles.add(new SupportingFile("__init__model.mustache", modelPath, "__init__.py"));
         supportingFiles.add(new SupportingFile("__init__api.mustache", apiPath, "__init__.py"));
