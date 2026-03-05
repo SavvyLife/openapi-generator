@@ -64,6 +64,7 @@ public class PythonUnboundClientCodegen extends AbstractPythonCodegen implements
         importMapping.clear();
 
         // Type mappings
+        typeMapping.put("UUID", "UUID");
         typeMapping.put("array", "List");
         typeMapping.put("set", "List");
         typeMapping.put("map", "Dict");
@@ -73,6 +74,7 @@ public class PythonUnboundClientCodegen extends AbstractPythonCodegen implements
         typeMapping.put("ByteArray", "bytearray");
 
         languageSpecificPrimitives.remove("file");
+        languageSpecificPrimitives.add("UUID");
         languageSpecificPrimitives.add("decimal.Decimal");
         languageSpecificPrimitives.add("bytearray");
         languageSpecificPrimitives.add("none_type");
