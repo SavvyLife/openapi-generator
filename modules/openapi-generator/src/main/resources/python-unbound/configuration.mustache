@@ -44,6 +44,12 @@ class Configuration:
         """Return new config with Authorization header set."""
         return self.with_headers({"Authorization": f"Bearer {token}"})
 
+    def with_basic_auth(self, username: str, password: str) -> Self:
+        """Return new config with Basic Authorization header set."""
+        import base64
+        credentials = base64.b64encode(f"{username}:{password}".encode()).decode()
+        return self.with_headers({"Authorization": f"Basic {credentials}"})
+
     def with_account(self, account_id: str) -> Self:
         """Return new config with accountId header set."""
         return self.with_headers({"accountId": account_id})
@@ -57,4 +63,12 @@ class Configuration:
         """Create a config with the context JWTToken."""
         jwt_token = ThreadContext.get()
         headers = {"Authorization": f"Bearer {jwt_token.access_token}"}
+        return cls(headers=headers)
+
+    @classmethod
+    def basic_authed(cls, username: str, password: str) -> Self:
+        """Create a config with Basic authentication."""
+        import base64
+        credentials = base64.b64encode(f"{username}:{password}".encode()).decode()
+        headers = {"Authorization": f"Basic {credentials}"}
         return cls(headers=headers)
