@@ -7,8 +7,8 @@ import pprint
 {{#vendorExtensions.x-py-model-imports}}
 {{{.}}}
 {{/vendorExtensions.x-py-model-imports}}
-from pydantic import StrictStr, Field
-from typing import Union, List, Set, Optional, Dict
+from pydantic import StrictStr, Field, ValidationError, model_validator
+from typing import Any, ClassVar, Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self
 
 {{#lambda.uppercase}}{{{classname}}}{{/lambda.uppercase}}_ONE_OF_SCHEMAS = [{{#oneOf}}"{{.}}"{{^-last}}, {{/-last}}{{/oneOf}}]
@@ -31,12 +31,65 @@ class {{classname}}({{#parent}}{{{.}}}{{/parent}}{{^parent}}BaseModel{{/parent}}
 
 {{#discriminator}}
 
-    discriminator_value_class_map: Dict[str, str] = {
-{{#children}}
-        '{{^vendorExtensions.x-discriminator-value}}{{name}}{{/vendorExtensions.x-discriminator-value}}{{#vendorExtensions.x-discriminator-value}}{{{vendorExtensions.x-discriminator-value}}}{{/vendorExtensions.x-discriminator-value}}': '{{{classname}}}'{{^-last}},{{/-last}}
-{{/children}}
+    discriminator_value_class_map: ClassVar[Dict[str, str]] = {
+{{#mappedModels}}
+        '{{mappingName}}': '{{{modelName}}}'{{^-last}},{{/-last}}
+{{/mappedModels}}
     }
 {{/discriminator}}
+
+    @model_validator(mode='before')
+    @classmethod
+    def _validate_input(cls, data: Any) -> Any:
+        """Validate and resolve oneOf from raw input (e.g. dict or primitive)."""
+        if isinstance(data, dict) and 'actual_instance' in data:
+            return data
+        if isinstance(data, cls):
+            return data
+        {{#composedSchemas.oneOf}}
+        {{^isContainer}}
+        {{^isPrimitiveType}}
+        if isinstance(data, {{{dataType}}}):
+            return {'actual_instance': data}
+        {{/isPrimitiveType}}
+        {{/isContainer}}
+        {{/composedSchemas.oneOf}}
+        if not isinstance(data, dict):
+            raise ValueError(f"Cannot validate {type(data)} as {cls.__name__}")
+        error_messages = []
+        match = 0
+        matched_instance = None
+        {{#composedSchemas.oneOf}}
+        {{#isContainer}}
+        try:
+            matched_instance = data
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        {{/isContainer}}
+        {{^isContainer}}
+        {{#isPrimitiveType}}
+        try:
+            matched_instance = data
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        {{/isPrimitiveType}}
+        {{^isPrimitiveType}}
+        try:
+            matched_instance = {{{dataType}}}.model_validate(data)
+            match += 1
+        except (ValidationError, ValueError) as e:
+            error_messages.append(str(e))
+        {{/isPrimitiveType}}
+        {{/isContainer}}
+        {{/composedSchemas.oneOf}}
+        if match != 1:
+            raise ValueError(
+                f"Expected exactly one match for {cls.__name__} oneOf, got {match}. Details: "
+                + ", ".join(error_messages)
+            )
+        return {'actual_instance': matched_instance}
 
     def __init__(self, *args, **kwargs) -> None:
         if args:
@@ -207,4 +260,3 @@ class {{classname}}({{#parent}}{{{.}}}{{/parent}}{{^parent}}BaseModel{{/parent}}
 # TODO: Rewrite to not use raise_errors
 {{classname}}.model_rebuild(raise_errors=False)
 {{/vendorExtensions.x-py-postponed-model-imports.size}}
-
