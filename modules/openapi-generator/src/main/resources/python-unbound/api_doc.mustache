@@ -22,7 +22,8 @@ Method | Description
 ### Example
 
 ```python
-from {{packageName}}.configuration import Configuration
+import httpx
+from unbound_transit.rpc_configuration import RpcClientConfiguration
 from {{packageName}}.api.{{classFilename}} import {{classname}}
 {{#hasParams}}
 {{#allParams}}
@@ -35,14 +36,10 @@ from {{packageName}}.models.{{model.classFilename}} import {{dataType}}
 {{/hasParams}}
 
 # Configure the client
-config = Configuration(
-    headers={
-        "Authorization": "Bearer YOUR_TOKEN",
-        "accountId": "YOUR_ACCOUNT_ID",
-    }
-)
+auth = httpx.BasicAuth("username", "password")
+rpc = RpcClientConfiguration()
 
-api = {{classname}}(configuration=config)
+api = {{classname}}(auth=auth, rpc_configuration=rpc)
 {{#allParams}}
 {{#required}}
 {{paramName}} = {{{example}}}  # {{{dataType}}} | {{{description}}}

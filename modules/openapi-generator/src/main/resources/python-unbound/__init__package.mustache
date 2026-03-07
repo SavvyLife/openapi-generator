@@ -6,8 +6,10 @@
 
 __version__ = "{{{packageVersion}}}"
 
-# Import Configuration
-from {{packageName}}.configuration import Configuration
+# Import runtime configuration
+from {{packageName}}.configuration import (
+    RpcClientConfiguration,
+)
 
 # Import exceptions
 from {{packageName}}.exceptions import (

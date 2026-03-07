@@ -5,7 +5,7 @@ description = "{{{appName}}}"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "{{{licenseInfo}}}{{^licenseInfo}}MIT{{/licenseInfo}}"
-keywords = ["OpenAPI", "OpenAPI-Generator", "{{{appName}}}", "NATS"]
+keywords = ["OpenAPI", "OpenAPI-Generator", "{{{appName}}}"]
 authors = [
     { name = "{{infoName}}{{^infoName}}OpenAPI Generator Community{{/infoName}}", email = "{{infoEmail}}{{^infoEmail}}team@openapitools.org{{/infoEmail}}" }
 ]
@@ -13,7 +13,7 @@ dependencies = [
     "pydantic>=2",
     "orjson>=3.9.0",
     "httpx>=0.25.0",
-    "api-framework @ git+https://github.com/SavvyLife/unbound-api-framework-ext.git@main",
+    "unbound-transit @ git+https://github.com/SavvyLife/unbound-transit.git@main",
 ]
 
 [project.optional-dependencies]
@@ -36,4 +36,3 @@ strict = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-

@@ -3,12 +3,14 @@
 {{>partial_header}}
 
 from typing import Any, Dict, List, Optional, Union
+
+import httpx
 {{#imports}}
 {{import}}
 {{/imports}}
 
-from api_framework.data_access.message_broker.mb_request_client import MbAsyncRpcClient
-from {{packageName}}.configuration import Configuration
+from unbound_transit.rpc_configuration import RpcClientConfiguration
+from unbound_transit.async_rpc_client import MbAsyncRpcClient
 from {{packageName}}.exceptions import (
     ApiException,
     raise_for_status,
@@ -23,11 +25,18 @@ class {{classname}}:
     Do not edit the class manually.
     """
 
-    def __init__(self, configuration: Optional[Configuration] = None) -> None:
-        self.configuration = configuration or Configuration.authed()
+    def __init__(
+        self,
+        auth: Optional[httpx.Auth] = None,
+        rpc_configuration: Optional[RpcClientConfiguration] = None,
+    ) -> None:
+        self.rpc_configuration = rpc_configuration or RpcClientConfiguration()
         self._client = MbAsyncRpcClient(
-            headers=self.configuration.headers,
-            timeout=self.configuration.timeout,
+            auth=auth,
+            headers=self.rpc_configuration.headers,
+            cookies=self.rpc_configuration.cookies,
+            timeout=self.rpc_configuration.timeout,
+            base_url=self.rpc_configuration.base_url,
         )
 {{#operation}}
 
