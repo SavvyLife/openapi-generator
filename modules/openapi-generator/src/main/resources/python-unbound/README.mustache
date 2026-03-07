@@ -2,7 +2,7 @@
 
 {{{appDescription}}}
 
-This client uses `MbAsyncRpcClient` from `unbound-transit` for NATS-based communication instead of HTTP.
+This client uses `AsyncTransitClient` from `unbound-transit` for RPC communication.
 
 ## Requirements
 
@@ -19,7 +19,7 @@ pip install {{{projectName}}}
 
 ```python
 import httpx
-from unbound_transit.rpc_configuration import RpcClientConfiguration
+from unbound_transit.client.rpc_configuration import RpcClientConfiguration
 {{#apiInfo}}
 {{#apis}}
 {{#-first}}

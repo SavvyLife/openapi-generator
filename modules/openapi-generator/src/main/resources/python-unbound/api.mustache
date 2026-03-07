@@ -9,8 +9,8 @@ import httpx
 {{import}}
 {{/imports}}
 
-from unbound_transit.rpc_configuration import RpcClientConfiguration
-from unbound_transit.async_rpc_client import MbAsyncRpcClient
+from unbound_transit.client.rpc_configuration import RpcClientConfiguration
+from unbound_transit.client.async_client import AsyncTransitClient
 from {{packageName}}.exceptions import (
     ApiException,
     raise_for_status,
@@ -31,7 +31,7 @@ class {{classname}}:
         rpc_configuration: Optional[RpcClientConfiguration] = None,
     ) -> None:
         self.rpc_configuration = rpc_configuration or RpcClientConfiguration()
-        self._client = MbAsyncRpcClient(
+        self._client = AsyncTransitClient(
             auth=auth,
             headers=self.rpc_configuration.headers,
             cookies=self.rpc_configuration.cookies,
