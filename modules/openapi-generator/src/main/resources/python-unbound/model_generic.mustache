@@ -11,7 +11,7 @@ import json
 {{/vendorExtensions.x-py-model-imports}}
 from typing import Optional, Set
 from typing_extensions import Self
-from {{packageName}}.utils import to_camel_case
+from pydantic.alias_generators import to_camel
 
 {{#hasChildren}}
 {{#discriminator}}
@@ -95,7 +95,7 @@ class {{classname}}({{#parent}}{{{.}}}{{/parent}}{{^parent}}BaseModel{{/parent}}
 {{/vars}}
 
     model_config = ConfigDict(
-        alias_generator=to_camel_case,
+        alias_generator=to_camel,
         populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
