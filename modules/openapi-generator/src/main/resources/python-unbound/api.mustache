@@ -9,8 +9,8 @@ import httpx
 {{import}}
 {{/imports}}
 
-from unbound_transit.client.rpc_configuration import RpcClientConfiguration
-from unbound_transit.client.async_client import MbAsyncRpcClient
+from unbound_transit import RpcClientConfiguration
+from unbound_transit import MbAsyncRpcClient
 from {{packageName}}.exceptions import (
     ApiException,
     raise_for_status,
